@@ -5,17 +5,17 @@ L.Control.cascadeButtons = L.Control.extend({
         className: ''
     },
 
-    initialize: function(buttons, options){
+    initialize: function (buttons, options) {
         L.Util.setOptions(this, options);
         this._buttons = buttons;
     },
 
-    onAdd: function (map){
+    onAdd: function (map) {
         const className = (this.options.className) ? this.options.className : 'leaflet-control-cascadeButtons';
         const directionClass = this.buildDirection(this.options.direction);
         const toolBar = L.DomUtil.create('div', `${className} ${directionClass}`);
 
-        this._buttons.forEach((button)=>{
+        this._buttons.forEach((button) => {
 
             const directionClass = this.buildDirection(this.getOposite(this.options.direction));
             const container = L.DomUtil.create('div', `${directionClass}`);
@@ -27,20 +27,20 @@ L.Control.cascadeButtons = L.Control.extend({
             mainButton.setAttribute("title", button.title !== undefined ? button.title : '');
             container.append(mainButton);
 
-            if(button.items && button.items.length>0){
+            if (button.items && button.items.length > 0) {
 
-                button.items.forEach((item)=>{
-                    const childButton = L.DomUtil.create('button',`${item.icon} hidden`);
+                button.items.forEach((item) => {
+                    const childButton = L.DomUtil.create('button', `${item.icon} hidden`);
                     childButton.setAttribute("type", "button");
                     childButton.setAttribute("aria-expanded", "false");
                     childButton.setAttribute("title", item.title !== undefined ? item.title : '');
                     container.append(childButton);
-                    childButton.addEventListener('click', () => item.command());
+                    childButton.addEventListener('click', (e) => item.command(e));
                 })
 
-                mainButton.addEventListener('click', function(){
-                    container.childNodes.forEach( (child, index) => {
-                        if(index!==0) child.classList.toggle('hidden');
+                mainButton.addEventListener('click', function () {
+                    container.childNodes.forEach((child, index) => {
+                        if (index !== 0) child.classList.toggle('hidden');
                     });
 
                     const isAriaExpanded = JSON.parse(mainButton.getAttribute("aria-expanded"));
@@ -48,11 +48,11 @@ L.Control.cascadeButtons = L.Control.extend({
 
                     (!button.ignoreActiveState) ? mainButton.classList.toggle('activeButton') : '';
                 })
-            } 
+            }
             else {
-                mainButton.addEventListener('click', function(){
+                mainButton.addEventListener('click', function (e) {
                     (!button.ignoreActiveState) ? mainButton.classList.toggle('activeButton') : '';
-                    button.command();
+                    button.command(e);
                 })
             }
         })
@@ -62,23 +62,23 @@ L.Control.cascadeButtons = L.Control.extend({
         return toolBar;
     },
 
-    buildDirection: function(direction){
+    buildDirection: function (direction) {
 
-        if(direction === "vertical"){
-            if((this.options.position).includes('left')){
-                if(this.options.position.includes('bottom')) direction = direction + ' col-reverse'
+        if (direction === "vertical") {
+            if ((this.options.position).includes('left')) {
+                if (this.options.position.includes('bottom')) direction = direction + ' col-reverse'
             }
-            if((this.options.position).includes('right')){
-                if(this.options.position.includes('bottom')) direction = direction + ' col-reverse'
+            if ((this.options.position).includes('right')) {
+                if (this.options.position.includes('bottom')) direction = direction + ' col-reverse'
                 direction = direction + ' right';
             }
         }
-        else if(direction === "horizontal"){
-            if((this.options.position).includes('top')){
-                if(this.options.position.includes('right')) direction = direction + ' row-reverse';
+        else if (direction === "horizontal") {
+            if ((this.options.position).includes('top')) {
+                if (this.options.position.includes('right')) direction = direction + ' row-reverse';
             }
-            if((this.options.position).includes('bottom')){
-                if(this.options.position.includes('right')) direction = direction + ' row-reverse';
+            if ((this.options.position).includes('bottom')) {
+                if (this.options.position.includes('right')) direction = direction + ' row-reverse';
                 direction = direction + ' bottom'
             }
         }
@@ -86,11 +86,11 @@ L.Control.cascadeButtons = L.Control.extend({
         return direction
     },
 
-    getOposite: function(direction){
+    getOposite: function (direction) {
         return (direction === "vertical") ? "horizontal" : "vertical"
     }
 })
 
-L.cascadeButtons = function(buttons, options){
-    return new L.Control.cascadeButtons(buttons, options);  
+L.cascadeButtons = function (buttons, options) {
+    return new L.Control.cascadeButtons(buttons, options);
 }
